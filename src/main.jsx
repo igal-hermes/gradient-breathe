@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { Maximize2, Minimize2, Sparkles, TimerReset, Wind } from 'lucide-react';
+import { Sparkles, TimerReset, Wind } from 'lucide-react';
 import './styles.css';
 
 const phaseMeta = [
@@ -57,17 +57,22 @@ function useBreathClock(durations) {
   return { phase, phaseProgress, remaining, cycle, cycleProgress, elapsed };
 }
 
-function OrganismCanvas({ phase, phaseProgress, elapsed, fullscreen }) {
+function OrganismCanvas({ phase, phaseProgress, elapsed, phaseDuration }) {
   const canvasRef = useRef(null);
+  const stateRef = useRef({ phase, phaseProgress, elapsed, phaseDuration });
+
+  useEffect(() => {
+    stateRef.current = { phase, phaseProgress, elapsed, phaseDuration };
+  }, [phase, phaseProgress, elapsed, phaseDuration]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
     let raf;
-    const particles = Array.from({ length: 360 }, (_, i) => ({
+    const particles = Array.from({ length: 380 }, (_, i) => ({
       seed: i * 12.9898,
-      lane: i / 360,
-      jitter: (i % 17) / 17,
+      lane: i / 380,
+      jitter: (i % 23) / 23,
     }));
 
     const resize = () => {
@@ -79,36 +84,41 @@ function OrganismCanvas({ phase, phaseProgress, elapsed, fullscreen }) {
     };
 
     const draw = () => {
+      const { phase, phaseProgress, elapsed, phaseDuration } = stateRef.current;
       const w = canvas.clientWidth;
       const h = canvas.clientHeight;
       const cx = w / 2;
       const cy = h / 2;
       const min = Math.min(w, h);
       const inhaleScale = phase.key === 'inhale' ? phaseProgress : phase.key === 'hold' ? 1 : 1 - phaseProgress;
-      const breath = 0.74 + inhaleScale * 0.28;
-      const pulse = Math.sin(elapsed * 1.8) * 0.02 + Math.sin(elapsed * 0.43) * 0.035;
-      const radius = min * (fullscreen ? 0.28 : 0.31) * (breath + pulse);
+      const phaseWave = phaseProgress * Math.PI * 2;
+      const durationFactor = 4 / Math.max(1, phaseDuration);
+      const organismTime = phaseProgress * Math.PI * 2;
+      const breath = 0.72 + inhaleScale * 0.3;
+      const pulse = Math.sin(phaseWave) * 0.028 + Math.sin(phaseWave * 2.0) * 0.012;
+      const radius = min * 0.31 * (breath + pulse);
 
       ctx.clearRect(0, 0, w, h);
       const bg = ctx.createRadialGradient(cx, cy, min * 0.04, cx, cy, min * 0.62);
-      bg.addColorStop(0, `${phase.color}26`);
-      bg.addColorStop(0.42, `${phase.color}10`);
+      bg.addColorStop(0, `${phase.color}28`);
+      bg.addColorStop(0.42, `${phase.color}12`);
       bg.addColorStop(1, 'rgba(255,255,255,0)');
       ctx.fillStyle = bg;
       ctx.fillRect(0, 0, w, h);
 
       ctx.globalCompositeOperation = 'lighter';
       for (const p of particles) {
-        const angle = p.lane * Math.PI * 2 + elapsed * (0.16 + p.jitter * 0.12);
-        const wave = Math.sin(angle * 4 + elapsed * 2.1 + p.seed) * 0.16 + Math.cos(angle * 7 - elapsed * 1.25) * 0.07;
+        const drift = organismTime * (0.55 + p.jitter * 0.42);
+        const angle = p.lane * Math.PI * 2 + drift;
+        const wave = Math.sin(angle * 4 + organismTime * 2.2 + p.seed) * 0.17 + Math.cos(angle * 7 - organismTime * 1.15) * 0.075;
         const membrane = radius * (1 + wave);
-        const spiral = Math.sin(elapsed * 0.6 + p.seed) * min * 0.018;
+        const spiral = Math.sin(organismTime * 0.9 + p.seed) * min * 0.018 * durationFactor;
         const x = cx + Math.cos(angle) * (membrane + spiral);
-        const y = cy + Math.sin(angle) * (membrane * 0.82 + spiral) + Math.sin(angle * 3 + elapsed) * min * 0.025;
-        const depth = 0.45 + 0.55 * Math.sin(angle + elapsed * 0.7 + p.seed);
-        const size = (fullscreen ? 1.8 : 1.35) + depth * (fullscreen ? 3.5 : 2.6);
+        const y = cy + Math.sin(angle) * (membrane * 0.82 + spiral) + Math.sin(angle * 3 + organismTime) * min * 0.024;
+        const depth = 0.45 + 0.55 * Math.sin(angle + organismTime * 1.2 + p.seed);
+        const size = 1.35 + depth * 2.75;
         ctx.beginPath();
-        ctx.fillStyle = phase.color + Math.floor(90 + depth * 135).toString(16).padStart(2, '0');
+        ctx.fillStyle = phase.color + Math.floor(92 + depth * 138).toString(16).padStart(2, '0');
         ctx.arc(x, y, size, 0, Math.PI * 2);
         ctx.fill();
       }
@@ -116,11 +126,11 @@ function OrganismCanvas({ phase, phaseProgress, elapsed, fullscreen }) {
       for (let ring = 0; ring < 4; ring += 1) {
         ctx.beginPath();
         ctx.lineWidth = 1.2;
-        ctx.strokeStyle = phase.color + (26 - ring * 4).toString(16).padStart(2, '0');
-        const r = radius * (0.56 + ring * 0.18 + Math.sin(elapsed + ring) * 0.015);
+        ctx.strokeStyle = phase.color + (28 - ring * 4).toString(16).padStart(2, '0');
+        const r = radius * (0.56 + ring * 0.18 + Math.sin(organismTime + ring) * 0.018);
         for (let i = 0; i <= 220; i += 1) {
           const a = (i / 220) * Math.PI * 2;
-          const wobble = Math.sin(a * 5 + elapsed * 1.6 + ring) * min * 0.008;
+          const wobble = Math.sin(a * 5 + organismTime * 1.65 + ring) * min * 0.008;
           const x = cx + Math.cos(a) * (r + wobble);
           const y = cy + Math.sin(a) * ((r + wobble) * 0.82);
           if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
@@ -139,28 +149,16 @@ function OrganismCanvas({ phase, phaseProgress, elapsed, fullscreen }) {
       cancelAnimationFrame(raf);
       window.removeEventListener('resize', resize);
     };
-  }, [phase, phaseProgress, elapsed, fullscreen]);
+  }, []);
 
   return <canvas className="organism-canvas" ref={canvasRef} aria-hidden="true" />;
 }
 
 function App() {
   const [durations, setDurations] = useState({ inhale: 4, hold: 4, exhale: 6 });
-  const [isFullscreen, setFullscreen] = useState(false);
-  const stageRef = useRef(null);
   const { phase, phaseProgress, remaining, cycle, cycleProgress, elapsed } = useBreathClock(durations);
 
-  useEffect(() => {
-    const onChange = () => setFullscreen(Boolean(document.fullscreenElement));
-    document.addEventListener('fullscreenchange', onChange);
-    return () => document.removeEventListener('fullscreenchange', onChange);
-  }, []);
-
   const updateDuration = (key, value) => setDurations((prev) => ({ ...prev, [key]: clampDuration(value) }));
-  const toggleFullscreen = async () => {
-    if (!document.fullscreenElement) await stageRef.current?.requestFullscreen();
-    else await document.exitFullscreen();
-  };
 
   return (
     <main className="shell">
@@ -172,7 +170,7 @@ function App() {
 
         <div className="hero-grid">
           <div className="copy">
-            <span className="eyebrow">editable cadence · living pixels · fullscreen</span>
+            <span className="eyebrow">editable cadence · living pixels · phase-timed motion</span>
             <h1>A breathing organism you can tune to your rhythm.</h1>
             <p>Set the cadence, then watch hundreds of pixels expand, shimmer, and fold back like a soft luminous creature.</p>
 
@@ -186,11 +184,8 @@ function App() {
             </div>
           </div>
 
-          <div ref={stageRef} className="breather" style={{ '--phase-color': phase.color }}>
-            <OrganismCanvas phase={phase} phaseProgress={phaseProgress} elapsed={elapsed} fullscreen={isFullscreen} />
-            <button className="fullscreen-btn" onClick={toggleFullscreen} aria-label="Toggle fullscreen animation">
-              {isFullscreen ? <Minimize2 size={16}/> : <Maximize2 size={16}/>} {isFullscreen ? 'Exit' : 'Fullscreen'}
-            </button>
+          <div className="breather" style={{ '--phase-color': phase.color }}>
+            <OrganismCanvas phase={phase} phaseProgress={phaseProgress} elapsed={elapsed} phaseDuration={durations[phase.key]} />
             <div className="orb-core">
               <span>{phase.label}</span>
               <strong>{remaining}</strong>
