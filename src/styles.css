@@ -24,7 +24,7 @@ body { margin: 0; min-height: 100vh; overflow-x: hidden; }
 
 .hero-card {
   width: min(1160px, 100%);
-  min-height: min(720px, calc(100vh - 48px));
+  min-height: min(640px, calc(100dvh - 36px));
   background: rgba(255,255,255,.78);
   backdrop-filter: blur(24px) saturate(160%);
   border-radius: 28px;
@@ -69,26 +69,26 @@ body { margin: 0; min-height: 100vh; overflow-x: hidden; }
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(320px, 440px);
-  gap: clamp(28px, 6vw, 76px);
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 410px);
+  gap: clamp(22px, 5vw, 62px);
   align-items: center;
-  padding: clamp(38px, 8vw, 92px) clamp(22px, 6vw, 78px) clamp(34px, 7vw, 80px);
+  padding: clamp(26px, 5.5vw, 60px) clamp(22px, 5vw, 64px) clamp(28px, 5vw, 58px);
 }
 
 .eyebrow { display: inline-flex; margin-bottom: 18px; color: #666; text-transform: uppercase; letter-spacing: .08em; font-size: 12px; }
-h1 { margin: 0; max-width: 720px; font-size: clamp(44px, 8vw, 86px); line-height: .92; letter-spacing: clamp(-4.8px, -.06em, -2px); font-weight: 600; }
-p { margin: 24px 0 0; max-width: 620px; color: #4d4d4d; font-size: clamp(17px, 2vw, 21px); line-height: 1.65; }
+h1 { margin: 0; max-width: 720px; font-size: clamp(38px, 6.4vw, 72px); line-height: .94; letter-spacing: clamp(-4px, -.055em, -1.8px); font-weight: 600; }
+p { margin: 20px 0 0; max-width: 620px; color: #4d4d4d; font-size: clamp(16px, 1.8vw, 20px); line-height: 1.6; }
 
-.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; max-width: 520px; margin-top: 34px; }
-.stat { padding: 16px; border-radius: 16px; background: #fff; box-shadow: rgba(0,0,0,.08) 0 0 0 1px, rgba(0,0,0,.04) 0 8px 24px -16px; }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; max-width: 520px; margin-top: 26px; }
+.stat { padding: 14px; border-radius: 16px; background: #fff; box-shadow: rgba(0,0,0,.08) 0 0 0 1px, rgba(0,0,0,.04) 0 8px 24px -16px; }
 .stat span { color: var(--accent); font-size: 12px; font-weight: 500; text-transform: uppercase; }
 .stat strong { display: block; margin-top: 8px; font-size: 30px; letter-spacing: -1.4px; }
 
-.breather { min-height: 480px; display: grid; place-items: center; align-content: center; gap: 24px; border-radius: 24px; background: linear-gradient(180deg, rgba(255,255,255,.9), rgba(250,250,250,.72)); box-shadow: rgba(0,0,0,.08) 0 0 0 1px, rgba(0,0,0,.04) 0 2px 2px, rgba(0,0,0,.04) 0 28px 48px -32px, #fafafa 0 0 0 1px inset; }
-.orb { width: clamp(210px, 30vw, 300px); aspect-ratio: 1; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle at 35% 30%, #fff, color-mix(in srgb, var(--phase-color) 32%, white), var(--phase-color)); box-shadow: color-mix(in srgb, var(--phase-color) 34%, transparent) 0 0 72px, rgba(0,0,0,.1) 0 18px 54px -30px; animation: breathe 14s ease-in-out infinite; }
+.breather { min-height: 430px; display: grid; place-items: center; align-content: center; gap: 20px; border-radius: 24px; background: linear-gradient(180deg, rgba(255,255,255,.9), rgba(250,250,250,.72)); box-shadow: rgba(0,0,0,.08) 0 0 0 1px, rgba(0,0,0,.04) 0 2px 2px, rgba(0,0,0,.04) 0 28px 48px -32px, #fafafa 0 0 0 1px inset; }
+.orb { width: clamp(190px, 27vw, 270px); aspect-ratio: 1; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle at 35% 30%, #fff, color-mix(in srgb, var(--phase-color) 32%, white), var(--phase-color)); box-shadow: color-mix(in srgb, var(--phase-color) 34%, transparent) 0 0 72px, rgba(0,0,0,.1) 0 18px 54px -30px; animation: breathe 14s ease-in-out infinite; }
 .orb-core { width: 58%; aspect-ratio: 1; border-radius: 50%; display: grid; place-items: center; align-content: center; background: rgba(255,255,255,.72); box-shadow: rgba(0,0,0,.08) 0 0 0 1px inset; backdrop-filter: blur(16px); }
 .orb-core span { color: #4d4d4d; font-size: 15px; font-weight: 500; }
-.orb-core strong { font-size: 74px; line-height: .9; letter-spacing: -4px; }
+.orb-core strong { font-size: clamp(56px, 8vw, 70px); line-height: .9; letter-spacing: -4px; }
 .caption { display: inline-flex; align-items: center; gap: 8px; color: #666; font-size: 13px; }
 .progress { width: min(300px, 78%); height: 8px; overflow: hidden; border-radius: 999px; background: #ebebeb; }
 .progress span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #0a72ef, #de1d8d, #ff5b4f); transition: width .8s cubic-bezier(.2,.8,.2,1); }
